@@ -1,0 +1,17 @@
+<?php
+
+namespace {NAMESPACE};
+
+use Illuminate\Database\Eloquent\Model;
+
+class {ModelName} extends Model
+{
+    protected $guarded = [];
+
+    /**********************模型关联区**********************/
+
+    /*********************自定义方法区*********************/
+
+    /**********************属性修改区**********************/
+
+}
