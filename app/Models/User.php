@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Exceptions\DbException;
 use App\Exceptions\LogicException;
+use GuzzleHttp\Client;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -33,6 +34,8 @@ class User extends Authenticatable
 
     ];
 
+
+
     const TOKEN_NAME = 'laravel8';
 
     /***********************模型关联区********************/
@@ -44,6 +47,17 @@ class User extends Authenticatable
 
     /***********************自定义方法区*******************/
 
+    public function findForPassport($login)
+    {
+        return $this->orWhere('phone', $login)->first();
+    }
+
+    /**
+     * 获取个人访问令牌,有效期1年
+     *
+     * @param self $user
+     * @return array
+     */
     public static function getToken(self $user)
     {
         $token = $user->createToken(self::TOKEN_NAME);
@@ -51,6 +65,29 @@ class User extends Authenticatable
             'token' => $token->accessToken,
             'expires_at' => (string)$token->token->expires_at
         ];
+    }
+
+    /**
+     * 获取访问令牌,可以自行设置有效期
+     *
+     * @param $phone
+     * @param $password
+     * @return mixed
+     */
+    public static function getOauthToken($phone,$password)
+    {
+        $http = new Client;
+        $response = $http->post(config('app.url').'/oauth/token', [
+            'form_params' => [
+                'grant_type' => 'password',
+                'client_id' => config('laravel8.passport.client_id'),
+                'client_secret' => config('laravel8.passport.client_secret'),
+                'username' => $phone,
+                'password' => $password,
+                'scope' => '*',
+            ],
+        ]);
+        return json_decode((string) $response->getBody(), true);
     }
 
     /**

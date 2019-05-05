@@ -33,7 +33,7 @@ class AuthServiceProvider extends ServiceProvider
         /**
          * 设置token过期时间，默认永久有效
          */
-//        Passport::tokensExpireIn(Carbon::now()->addDays(15));
+//        Passport::tokensExpireIn(Carbon::now()->addYears(10));
         //Passport::refreshTokensExpireIn(Carbon::now()->addDays(30));
     }
 }
