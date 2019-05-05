@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 
 class UploadTool
 {
-    public $disk    = 'qiniu'; //filesystem,disk
+    public $disk    = 'oss'; //filesystem,disk
     public $maxSize = 2 ;      //单位：MB
 
     /**
@@ -202,7 +202,7 @@ class UploadTool
      */
     public $type    = [];      //文件mimeType类型
 
-    public function __construct($disk = 'qiniu',$maxSize = 2,$type = '')
+    public function __construct($disk = 'oss',$maxSize = 2,$type = '')
     {
         $this->disk    = $disk;
         $this->maxSize = $maxSize;
@@ -243,10 +243,13 @@ class UploadTool
         if (!Str::contains($type,$this->type))
             throw new UploadException(UploadException::EXCEPTION_TYPE_NOT_SUPPORT);
         if ($filename)
-            $dbPath = Storage::disk($this->disk)->putFileAs($path,$uploadedFile,$filename);
+            $dbPath = rtrim($path,'/').'/'.ltrim($filename,'/');
         else
-            $dbPath = Storage::disk($this->disk)->putFile($path,$uploadedFile);
-        return $dbPath;
+            $dbPath = rtrim($path,'/').'/'.Str::random();
+        if (Storage::disk($this->disk)->put($dbPath,file_get_contents($uploadedFile)))
+            return $dbPath;
+        else
+            throw new UploadException(UploadException::EXCEPTION_UPLOAD_FAIL);
     }
 
     /**
@@ -266,8 +269,11 @@ class UploadTool
                 throw new UploadException(UploadException::EXCEPTION_TYPE_NOT_SUPPORT);
         }
         foreach ($uploadedFiles as $uploadedFile){
-            $dbPath = Storage::disk($this->disk)->putFile($path,$uploadedFile);
-            array_push($dbPaths,$dbPath);
+            $dbPath = rtrim($path,'/').'/'.Str::random();
+            if (Storage::disk($this->disk)->put($dbPath,file_get_contents($uploadedFile)))
+                array_push($dbPaths,$dbPath);
+            else
+                throw new UploadException(UploadException::EXCEPTION_UPLOAD_FAIL);
         }
         return $dbPaths;
     }

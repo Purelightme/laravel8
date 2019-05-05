@@ -19,7 +19,7 @@ class CommonException extends \Exception
             return [
                 'errcode' => $this->code,
                 'errmsg' => $this->message,
-                'data' => $this->getTraceAsString(),
+                'data' => $this->getTrace(),
             ];
     }
 

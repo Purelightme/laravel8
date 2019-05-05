@@ -13,7 +13,7 @@ return [
     'turn' => 'off', //是否真正发送短信，on发送，off不发送
 
     'cache' => [
-        'driver' => 'redis', //验证码缓存driver，支持redis，db，可自行定制其他driver
+        'driver' => 'db', //验证码缓存driver，支持redis，db，可自行定制其他driver
     ],
 
     'code' => [
@@ -43,5 +43,10 @@ return [
                 'sign_name' => env('SIGN_NAME'),
             ],
         ],
+    ],
+
+    'templates' => [
+        'register' => '',
+        'login' => '',
     ],
 ];

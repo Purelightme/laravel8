@@ -23,7 +23,7 @@ class CreateSmsCachesTable extends Migration
             $table->string('scene')->comment('场景');
             $table->string('phone')->comment('手机号');
             $table->string('code')->comment('验证码');
-            $table->dateTime('expired_at')->comment('验证码过期时间');
+            $table->dateTime('expires_at')->comment('验证码过期时间');
             $table->timestamps();
 
             $table->softDeletes();

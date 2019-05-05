@@ -11,11 +11,22 @@ class SmsCache extends Model
 
     protected $guarded = [];
 
+    const SCENE_REGISTER = 'register';
+    const SCENE_LOGIN = 'login';
+
+    /**
+     * 获取最近的短信记录
+     *
+     * @param $scene
+     * @param $phone
+     * @return mixed
+     */
     public static function getRecordBySceneAndPhone($scene,$phone)
     {
-        return self::where([
+        $record = self::where([
             ['scene',$scene],
             ['phone',$phone]
-        ])->last();
+        ])->latest()->first();
+        return $record;
     }
 }

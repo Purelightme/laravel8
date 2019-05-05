@@ -28,6 +28,8 @@ class SmsDbCache extends SmsCache
     public function checkCode($scene, $phone, $code)
     {
         $cache = SmsCacheModel::getRecordBySceneAndPhone($scene,$phone);
+        if (!$cache)
+            return false;
         return $code == $cache->code;
     }
 

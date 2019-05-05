@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: purelightme
- * Date: 2019/3/16
- * Time: 17:08
+ * Date: 2019/4/30
+ * Time: 17:18
  */
 
 namespace App\Exceptions;
@@ -11,18 +11,16 @@ namespace App\Exceptions;
 
 use Throwable;
 
-class UploadException extends CommonException
+class LogicException extends CommonException
 {
+
     const EXCEPTION_MAP = [
-        self::EXCEPTION_SIZE_TOO_BIG     => '文件过大，请适当压缩再上传',
-        self::EXCEPTION_TYPE_NOT_SUPPORT => '该文件类型不支持',
-        self::EXCEPTION_UPLOAD_FAIL      => '上传失败',
+        self::EXCEPTION_USER_NOT_FOUND => '用户未找到',
+        self::EXCEPTION_PASSWORD_ERROR => '密码有误',
     ];
 
-    const EXCEPTION_SIZE_TOO_BIG     = 4000;
-    const EXCEPTION_TYPE_NOT_SUPPORT = 4001;
-    const EXCEPTION_UPLOAD_FAIL      = 4002;
-
+    const EXCEPTION_USER_NOT_FOUND = '6001';
+    const EXCEPTION_PASSWORD_ERROR = '6002';
 
     public function __construct(int $code = 0, string $message = "", Throwable $previous = null)
     {
