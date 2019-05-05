@@ -173,7 +173,7 @@ class UserController extends Controller
     public function login_by_password(LoginByPasswordRequest $request)
     {
         $user = User::getUserByPhone($request->phone);
-        if (Hash::check($request->password,$user->password))
+        if (!Hash::check($request->password,$user->password))
             throw new LogicException(LogicException::EXCEPTION_PASSWORD_ERROR);
         return ResponseTool::buildSuccess(new UserTokenResource($user));
     }

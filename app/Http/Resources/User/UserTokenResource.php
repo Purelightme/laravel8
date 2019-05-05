@@ -15,8 +15,6 @@ class UserTokenResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
-            'token' => User::getToken($this)
-        ];
+        return User::getToken(User::find($this->id));
     }
 }

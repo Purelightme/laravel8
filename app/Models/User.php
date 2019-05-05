@@ -44,9 +44,13 @@ class User extends Authenticatable
 
     /***********************自定义方法区*******************/
 
-    public static function getToken(self $user):string
+    public static function getToken(self $user)
     {
-        return $user->createToken(self::TOKEN_NAME)->accessToken;
+        $token = $user->createToken(self::TOKEN_NAME);
+        return [
+            'token' => $token->accessToken,
+            'expires_at' => (string)$token->token->expires_at
+        ];
     }
 
     /**
