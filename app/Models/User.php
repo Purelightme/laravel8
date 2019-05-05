@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Exceptions\DbException;
+use App\Exceptions\LogicException;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -32,6 +33,8 @@ class User extends Authenticatable
 
     ];
 
+    const TOKEN_NAME = 'laravel8';
+
     /***********************模型关联区********************/
 
     public function scopeValid()
@@ -40,6 +43,11 @@ class User extends Authenticatable
     }
 
     /***********************自定义方法区*******************/
+
+    public static function getToken(self $user):string
+    {
+        return $user->createToken(self::TOKEN_NAME)->accessToken;
+    }
 
     /**
      * 添加用户
@@ -56,11 +64,35 @@ class User extends Authenticatable
         return $order;
     }
 
-    public static function getUserByPhone($phone)
+    /**
+     * 根据手机号获取用户
+     * 
+     * @param $phone
+     * @param bool $throw
+     * @return mixed
+     * @throws LogicException
+     */
+    public static function getUserByPhone($phone, $throw = true)
     {
         $user = self::where('phone',$phone)->first();
-        if (!$user)
-            throw new \Exception();
+        if (!$user && $throw)
+            throw new LogicException(LogicException::EXCEPTION_USER_NOT_FOUND);
+        return $user;
+    }
+
+    /**
+     * 重置用户密码
+     *
+     * @param self $user
+     * @param $password
+     * @return self
+     * @throws DbException
+     */
+    public static function resetUserPassword(self $user, $password)
+    {
+        $user->password = bcrypt($password);
+        if (!$user->save())
+            throw new DbException(DbException::EXCEPTION_SAVE_FAIL);
         return $user;
     }
 

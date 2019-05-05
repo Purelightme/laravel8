@@ -3,7 +3,9 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class Handler extends ExceptionHandler
@@ -50,6 +52,13 @@ class Handler extends ExceptionHandler
         return parent::render($request, $exception);
     }
 
+    /**
+     * 表单验证失败返回
+     *
+     * @param Request $request
+     * @param ValidationException $exception
+     * @return \Illuminate\Http\JsonResponse
+     */
     protected function invalidJson($request, ValidationException $exception)
     {
         $errmsg = '';
@@ -62,6 +71,24 @@ class Handler extends ExceptionHandler
             'errcode' => 2001,
             'errmsg'  => $errmsg,
             'data'    => $exception->errors()
+        ],200);
+    }
+
+    /**
+     * 认证失败返回
+     *
+     * @param Request $request
+     * @param AuthenticationException $e
+     * @return \Illuminate\Http\JsonResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    protected function unauthenticated($request,AuthenticationException $e)
+    {
+        return response()->json([
+            'errcode' => 1000,
+            'errmsg'  => '请先登录',
+            'data'    => [
+                'url' => $request->getPathInfo()
+            ]
         ],200);
     }
 }

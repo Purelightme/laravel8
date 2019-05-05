@@ -3,8 +3,11 @@
 namespace Modules\User\Http\Controllers;
 
 use App\Exceptions\LogicException;
+use App\Http\Resources\User\UserResource;
+use App\Http\Resources\User\UserTokenResource;
 use App\Models\SmsCache;
 use App\Models\User;
+use App\Tools\Response\ResponseTool;
 use App\Tools\Sms\SmsTool;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -12,6 +15,8 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
 use Modules\User\Http\Requests\Sms\AlreadyRegisteredRetrieveSmsRequest;
 use Modules\User\Http\Requests\Sms\NotRegisteredRetrieveSmsRequest;
+use Modules\User\Http\Requests\User\ChangePasswordRequest;
+use Modules\User\Http\Requests\User\FindPasswordByCodeRequest;
 use Modules\User\Http\Requests\User\LoginByCodeRequest;
 use Modules\User\Http\Requests\User\LoginByPasswordRequest;
 use Modules\User\Http\Requests\User\RegisterRequest;
@@ -20,11 +25,11 @@ class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
-     * @return Response
+     * @return array
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('user::index');
+        return ResponseTool::buildSuccess(new UserResource($request->user()));
     }
 
     /**
@@ -90,7 +95,7 @@ class UserController extends Controller
     }
 
     /**
-     * 发送注册短信
+     * 获取注册短信
      *
      * @param NotRegisteredRetrieveSmsRequest $request
      * @throws \App\Exceptions\SmsException
@@ -127,6 +132,25 @@ class UserController extends Controller
     }
 
     /**
+     * 获取找回密码短信
+     *
+     * @param AlreadyRegisteredRetrieveSmsRequest $request
+     * @return array
+     * @throws \App\Exceptions\SmsException
+     */
+    public function retrieve_find_password_code(AlreadyRegisteredRetrieveSmsRequest $request)
+    {
+        $params = [
+            'template' => config('sms.templates.find_password'),
+            'data' => [
+                'code' => SmsTool::generateRandomCode()
+            ]
+        ];
+        $res = SmsTool::sendVerifySms($request->phone,$params,config('sms.expires'),SmsCache::SCENE_FIND_PASSWORD);
+        return $res;
+    }
+
+    /**
      * 短信登录
      *
      * @param LoginByCodeRequest $request
@@ -136,7 +160,7 @@ class UserController extends Controller
     public function login_by_code(LoginByCodeRequest $request)
     {
         $user = User::getUserByPhone($request->phone);
-        return $user;
+        return ResponseTool::buildSuccess(new UserTokenResource($user));
     }
 
     /**
@@ -151,6 +175,35 @@ class UserController extends Controller
         $user = User::getUserByPhone($request->phone);
         if (Hash::check($request->password,$user->password))
             throw new LogicException(LogicException::EXCEPTION_PASSWORD_ERROR);
-        return $user;
+        return ResponseTool::buildSuccess(new UserTokenResource($user));
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param ChangePasswordRequest $request
+     * @return array
+     * @throws \App\Exceptions\DbException
+     */
+    public function change_password(ChangePasswordRequest $request)
+    {
+        $user = $request->user();
+        User::resetUserPassword($user,$request->password);
+        return ResponseTool::buildSuccess();
+    }
+
+    /**
+     * 找回密码-使用短信
+     *
+     * @param FindPasswordByCodeRequest $request
+     * @return array
+     * @throws LogicException
+     * @throws \App\Exceptions\DbException
+     */
+    public function find_password_by_code(FindPasswordByCodeRequest $request)
+    {
+        $user = User::getUserByPhone($request->phone);
+        User::resetUserPassword($user,$request->password);
+        return ResponseTool::buildSuccess();
     }
 }

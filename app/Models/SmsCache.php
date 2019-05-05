@@ -13,6 +13,7 @@ class SmsCache extends Model
 
     const SCENE_REGISTER = 'register';
     const SCENE_LOGIN = 'login';
+    const SCENE_FIND_PASSWORD = 'find_password';
 
     /**
      * 获取最近的短信记录

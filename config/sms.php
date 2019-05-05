@@ -48,5 +48,6 @@ return [
     'templates' => [
         'register' => '',
         'login' => '',
+        'find_password' => '',
     ],
 ];
