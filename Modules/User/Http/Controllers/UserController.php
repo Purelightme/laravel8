@@ -206,4 +206,16 @@ class UserController extends Controller
         User::resetUserPassword($user,$request->password);
         return ResponseTool::buildSuccess();
     }
+
+    /**
+     * 退出
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function logout(Request $request)
+    {
+        $request->user()->token()->delete();
+        return ResponseTool::buildSuccess();
+    }
 }

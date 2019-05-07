@@ -31,5 +31,6 @@ Route::middleware(['auth:api'])->group(function (){
     Route::prefix('user')->group(function (){
         Route::get('users','UserController@index');
         Route::post('change_password','UserController@change_password');
+        Route::post('logout','UserController@logout');
     });
 });
