@@ -23,6 +23,10 @@ Route::prefix('user')->group(function (){
     Route::get('retrieve_find_password_code','UserController@retrieve_find_password_code');
     Route::post('find_password_by_code','UserController@find_password_by_code');
 
+    Route::prefix('socialite')->group(function (){
+        Route::post('login','UserSocialiteController@login');
+        Route::post('register','UserSocialiteController@register');
+    });
 });
 
 
@@ -32,5 +36,10 @@ Route::middleware(['auth:api'])->group(function (){
         Route::get('users','UserController@index');
         Route::post('change_password','UserController@change_password');
         Route::post('logout','UserController@logout');
+
+        Route::prefix('socialite')->group(function (){
+            Route::post('bind','UserSocialiteController@bind');
+            Route::delete('unbind','UserSocialiteController@unbind');
+        });
     });
 });

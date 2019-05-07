@@ -9,8 +9,8 @@
 return [
 
     'passport' => [
-        'client_id' => env('CLIENT_ID','4'),
-        'client_secret' => env('CLIENT_SECRET','RizhL7LeC4Qa8X4RLL8Mgn6zDmtNeePE2vsd2Zr4'),
+        'client_id' => env('CLIENT_ID','2'),
+        'client_secret' => env('CLIENT_SECRET','hFOFa4D4LnWbazig7KKu70WFcnRj48IoZv7ypWZh'),
     ]
 
 ];

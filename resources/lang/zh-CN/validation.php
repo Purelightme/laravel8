@@ -144,6 +144,16 @@ return [
         'code' => [
             'required' => '请提供验证码',
         ],
+        'access_token' => [
+            'required' => '请提供access_token'
+        ],
+        'type' => [
+            'required' => '请指定类型',
+            'in' => '类型有误'
+        ],
+        'openid' => [
+            'required' => '请提供openid'
+        ],
     ],
 
     /*

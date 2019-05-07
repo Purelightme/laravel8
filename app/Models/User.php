@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Exceptions\DbException;
 use App\Exceptions\LogicException;
+use App\Notifications\RegisterSuccessNotification;
 use GuzzleHttp\Client;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -43,6 +44,11 @@ class User extends Authenticatable
     public function scopeValid()
     {
 
+    }
+
+    public function socialites()
+    {
+        return $this->hasMany(UserSocialite::class);
     }
 
     /***********************自定义方法区*******************/
@@ -96,13 +102,15 @@ class User extends Authenticatable
      * @param $phone
      * @param $password
      * @throws DbException
+     * @return self
      */
     public static function NewUser($phone,$password)
     {
-        $order = self::create(['phone' => $phone,'password' => bcrypt($password)]);
-        if (!$order)
+        $user = self::create(['phone' => $phone,'password' => bcrypt($password)]);
+        if (!$user)
             throw new DbException(DbException::EXCEPTION_SAVE_FAIL);
-        return $order;
+        $user->notify(new RegisterSuccessNotification($user));
+        return $user;
     }
 
     /**
